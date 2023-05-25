@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<!-- https://shop.bitgem3d.com/collections/buildings -->
+		<!-- https://www.mixamo.com/#/?page=2&type=Character -->
+		<script src="../libs/three.min.js"></script>
+        <script src="game.js"></script>
+		<script>
+            document.addEventListener("DOMContentLoaded", function(){
+				const game = new Game();
+				window.game = game;//For debugging only
+			});
+		</script>
+	</body>
+</html>
