@@ -50,6 +50,7 @@ class Game{
 		this.anims = ["run", "gather-objects", "look-around"];
 		
 		this.assetsPath = '../assets/';
+		this.fbxPath = 'fbx_braian/';
 		
 		const options = {
 			assets:[
@@ -60,7 +61,7 @@ class Game{
 			}
 		}
 		
-		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}fbx/${anim}.fbx`)});
+		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}${game.fbxPath}${anim}.fbx`)});
 		
 		this.mode = this.modes.PRELOAD;
 		
@@ -128,7 +129,7 @@ class Game{
 		const loader = new THREE.FBXLoader();
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/girl-walk.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${game.assetsPath}${game.fbxPath}girl-walk.fbx`, function ( object ) {
 
 			object.mixer = new THREE.AnimationMixer( object );
 			game.player.mixer = object.mixer;
@@ -189,7 +190,7 @@ class Game{
 	createCameras(){
 		const offset = new THREE.Vector3(0, 60, 0);
 		const front = new THREE.Object3D();
-		front.position.set(112, 100, 200);
+		front.position.set(112, 150, 300);
 		front.quaternion.set(0.07133122876303646, -0.17495722675648318, -0.006135162916936811, -0.9819695435118246);
 		front.parent = this.player.object;
 		const back = new THREE.Object3D();
@@ -215,7 +216,7 @@ class Game{
 	loadNextAnim(loader){
 		let anim = this.anims.pop();
 		const game = this;
-		loader.load( `${this.assetsPath}fbx/${anim}.fbx`, function( object ){
+		loader.load( `${this.assetsPath}${game.assetsPath}${game.fbxPath}${anim}.fbx`, function( object ){
 			game.player[anim] = object.animations[0];
 			if (game.anims.length>0){
 				game.loadNextAnim(loader);
