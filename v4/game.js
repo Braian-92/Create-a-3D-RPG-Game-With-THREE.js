@@ -125,6 +125,7 @@ class Game{
 				this.action = this.onAction.action;
 			}
 		}
+		console.log('contextAction 2 called ' + JSON.stringify(this.onAction));
 		
 		const game = this;
 		
@@ -153,11 +154,20 @@ class Game{
 					this.tweens.push( new Tween(right.position, "z", right.position.z + door.ancho, 2, function(){
 						game.tweens.splice(game.tweens.indexOf(this), 1);
 						delete game.cameraTarget; 
-						const door = game.doors[this.onAction.index];
+						console.log('this', this);
+						console.log('thisAction', this.onAction);
+						console.log('game', game);
+						console.log('gameDoors', game.doors);
+						console.log('actionIndex', game.onAction.index);
+						const door = game.doors[game.onAction.index];
 						const left = door.doors[0];
 						const right = door.doors[1];
 						const leftProxy = door.proxy[0];
 						const rightProxy = door.proxy[1];
+						console.log('left', left);
+						console.log('right', right);
+						console.log('leftP', left.position);
+						console.log('leftPproxi', leftProxy.position);
 						leftProxy.position = left.position.clone();
 						rightProxy.position = right.position.clone();
 					}));
