@@ -53,6 +53,7 @@ class Game{
 		this.tweens = [];
 		
 		this.assetsPath = '../assets/';
+		this.fbxPath = 'fbx_braian/';
 		
 		const options = {
 			assets:[
@@ -61,9 +62,9 @@ class Game{
 				`${this.assetsPath}sfx/button.${sfxExt}`,
 				`${this.assetsPath}sfx/door.${sfxExt}`,
                 `${this.assetsPath}sfx/fan.${sfxExt}`,
-				`${this.assetsPath}fbx/environment.fbx`,
-				`${this.assetsPath}fbx/girl-walk.fbx`,
-                `${this.assetsPath}fbx/usb.fbx`,
+				`${this.assetsPath}${this.fbxPath}environment.fbx`,
+				`${this.assetsPath}${this.fbxPath}girl-walk.fbx`,
+                `${this.assetsPath}${this.fbxPath}usb.fbx`,
 			],
 			oncomplete: function(){
 				game.init();
@@ -71,7 +72,7 @@ class Game{
 			}
 		}
 		
-		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}fbx/${anim}.fbx`)});
+		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}${game.fbxPath}${anim}.fbx`)});
 		
 		this.mode = this.modes.PRELOAD;
 		
@@ -244,7 +245,7 @@ class Game{
 		const loader = new THREE.FBXLoader();
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/girl-walk.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${this.fbxPath}girl-walk.fbx`, function ( object ) {
 
 			object.mixer = new THREE.AnimationMixer( object );
 			object.mixer.addEventListener('finished', function(e){
@@ -260,11 +261,15 @@ class Game{
 			game.player.root = object.mixer.getRoot();
 			
 			object.name = "Character";
+			object.scale.multiplyScalar(.6);
 					
 			object.traverse( function ( child ) {
 				if ( child.isMesh ) {
 					child.castShadow = true;
-					child.receiveShadow = true;		
+					child.receiveShadow = false;
+					if(child.name == 'Elvis_EyesAnimGeo'){
+						child.visible = false;
+					}
 				}
 			} );
 			
@@ -303,13 +308,13 @@ class Game{
     loadUSB(loader){
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/usb.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${this.fbxPath}usb.fbx`, function ( object ) {
 			game.scene.add(object);
 			
-            const scale = 0.2;
+            const scale = 1;
 			object.scale.set(scale, scale, scale);
 			object.name = "usb";
-            object.position.set(-416, 0.8, -472);
+            object.position.set(-416, 50, -472);
             object.castShadow = true;
 			
             game.collect.push(object);
@@ -328,7 +333,7 @@ class Game{
 	loadEnvironment(loader){
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/environment.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${this.fbxPath}environment.fbx`, function ( object ) {
 			game.scene.add(object);
 			game.doors = [];
 			game.fans = [];
@@ -443,7 +448,7 @@ class Game{
 	loadNextAnim(loader){
 		let anim = this.anims.pop();
 		const game = this;
-		loader.load( `${this.assetsPath}fbx/${anim}.fbx`, function( object ){
+		loader.load( `${this.assetsPath}${this.fbxPath}${anim}.fbx`, function( object ){
 			game.player[anim] = object.animations[0];
 			if (anim=='push-button'){
 				game.player[anim].loop = false;
@@ -656,7 +661,13 @@ class Game{
 		
 		this.actionBtn.style = 'display:none;';
 		let trigger = false;
-		
+
+		if (this.collect !== undefined){
+			this.collect.forEach(function(collectObj){
+				collectObj.rotation.x += 0.01;
+				collectObj.rotation.y += 0.01;
+			});
+		}
 		if (this.doors !== undefined){
 			this.doors.forEach(function(door){
 				if (game.player.object.position.distanceTo(door.trigger.position)<100){
