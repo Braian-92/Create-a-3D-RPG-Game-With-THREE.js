@@ -140,10 +140,17 @@ class Game{
 					this.cameraTarget.position.y += 150;
 					this.cameraTarget.position.x -= 950;
 					//target, channel, endValue, duration, oncomplete, easing="inOutQuad"){
-					this.tweens.push( new Tween(left.position, "z", left.position.z - 240, 2, function(){
+					if(door.estado == 'cerrada'){
+						door.estado = 'abierta';
+						door.ancho = Math.abs(door.ancho);
+					}else{
+						door.estado = 'cerrada';
+						door.ancho = -Math.abs(door.ancho);
+					}
+					this.tweens.push( new Tween(left.position, "z", left.position.z - door.ancho, 2, function(){
 						game.tweens.splice(game.tweens.indexOf(this), 1);
 					}));
-					this.tweens.push( new Tween(right.position, "z", right.position.z + 240, 2, function(){
+					this.tweens.push( new Tween(right.position, "z", right.position.z + door.ancho, 2, function(){
 						game.tweens.splice(game.tweens.indexOf(this), 1);
 						delete game.cameraTarget; 
 						const door = game.doors[this.onAction.index];
@@ -153,7 +160,7 @@ class Game{
 						const rightProxy = door.proxy[1];
 						leftProxy.position = left.position.clone();
 						rightProxy.position = right.position.clone();
-					}))
+					}));
 					break;
                 case 'collect':
                     this.activeCamera = this.player.cameras.collect;
@@ -357,6 +364,8 @@ class Game{
 						checkDoor();
  					}else if (child.name.includes('door')){
 						door.doors.push(child);
+						door.estado = 'cerrada';
+						door.ancho = 240;
 						checkDoor()
 					}else if (child.name.includes('fan')){
 						game.fans.push(child);
