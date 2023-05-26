@@ -50,11 +50,14 @@ class Game{
 		this.anims = ["gather-objects", "look-around", "push-button", "run"];
 		
 		this.assetsPath = '../assets/';
+		// this.fbxPath = 'fbx_clon/';
+		this.fbxPath = 'fbx_braian/';
+		// this.fbxPath = 'fbx/';
 		
 		const options = {
 			assets:[
                 `${this.assetsPath}sfx/gliss.${sfxExt}`,
-				`${this.assetsPath}fbx/environment.fbx`
+				`${this.assetsPath}${this.fbxPath}environment.fbx`
 			],
 			oncomplete: function(){
 				game.init();
@@ -62,7 +65,7 @@ class Game{
 			}
 		}
 		
-		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}fbx/${anim}.fbx`)});
+		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}${game.fbxPath}${anim}.fbx`)});
 		
 		this.mode = this.modes.PRELOAD;
 		
@@ -149,7 +152,7 @@ class Game{
 		const loader = new THREE.FBXLoader();
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/girl-walk.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${this.fbxPath}girl-walk.fbx`, function ( object ) {
 
 			object.mixer = new THREE.AnimationMixer( object );
 			object.castShadow = true;
@@ -158,6 +161,8 @@ class Game{
 			game.player.root = object.mixer.getRoot();
 			
 			object.name = "Character";
+
+			object.scale.multiplyScalar(.6);
 					
 			object.traverse( function ( child ) {
 				if ( child.isMesh ) {
@@ -199,7 +204,7 @@ class Game{
 	loadEnvironment(loader){
 		const game = this;
 		
-		loader.load( `${this.assetsPath}fbx/environment.fbx`, function ( object ) {
+		loader.load( `${this.assetsPath}${this.fbxPath}environment.fbx`, function ( object ) {
 			game.scene.add(object);
 			
 			object.receiveShadow = true;
@@ -290,7 +295,7 @@ class Game{
 	loadNextAnim(loader){
 		let anim = this.anims.pop();
 		const game = this;
-		loader.load( `${this.assetsPath}fbx/${anim}.fbx`, function( object ){
+		loader.load( `${this.assetsPath}${this.fbxPath}${anim}.fbx`, function( object ){
 			game.player[anim] = object.animations[0];
 			if (game.anims.length>0){
 				game.loadNextAnim(loader);
