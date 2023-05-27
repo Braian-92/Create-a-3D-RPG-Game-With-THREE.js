@@ -24,8 +24,8 @@ class Game{
 		this.levelIndex = 0;
 		this._hints = 0;
 		this.score = 0;
-		this.debug = false;
-		this.debugPhysics = false;
+		this.debug = true;
+		this.debugPhysics = true;
 		this.cameraFade = 0.05;
         this.mute = false;
         this.collect = [];
@@ -53,7 +53,9 @@ class Game{
 		this.tweens = [];
 		
 		this.assetsPath = '../assets/';
+		this.textureEnviroment = '../pared.jpg';
 		this.fbxPath = 'fbx_braian/';
+		this.showColliders = false;
 		
 		const options = {
 			assets:[
@@ -154,22 +156,26 @@ class Game{
 					this.tweens.push( new Tween(right.position, "z", right.position.z + door.ancho, 2, function(){
 						game.tweens.splice(game.tweens.indexOf(this), 1);
 						delete game.cameraTarget; 
-						console.log('this', this);
-						console.log('thisAction', this.onAction);
-						console.log('game', game);
-						console.log('gameDoors', game.doors);
-						console.log('actionIndex', game.onAction.index);
+						// console.log('this', this);
+						// console.log('thisAction', this.onAction);
+						// console.log('game', game);
+						// console.log('gameDoors', game.doors);
+						// console.log('actionIndex', game.onAction.index);
 						const door = game.doors[game.onAction.index];
 						const left = door.doors[0];
 						const right = door.doors[1];
 						const leftProxy = door.proxy[0];
 						const rightProxy = door.proxy[1];
-						console.log('left', left);
-						console.log('right', right);
-						console.log('leftP', left.position);
-						console.log('leftPproxi', leftProxy.position);
-						leftProxy.position = left.position.clone();
-						rightProxy.position = right.position.clone();
+						// console.log('left', left);
+						// console.log('right', right);
+						// console.log('leftP', left.position);
+						// console.log('leftPproxi', leftProxy.position);
+						leftProxy.position.x = left.position.x;
+						leftProxy.position.y = left.position.y;
+						leftProxy.position.z = left.position.z;
+						rightProxy.position.x = right.position.x;
+						rightProxy.position.y = right.position.y;
+						rightProxy.position.z = right.position.z;
 					}));
 					break;
                 case 'collect':
@@ -359,29 +365,63 @@ class Game{
 			object.scale.set(0.8, 0.8, 0.8);
 			object.name = "Environment";
 			let door = { trigger:null, proxy:[], doors:[]};
+
+			const materialsLib = [
+		        new THREE.MeshStandardMaterial( { color: 0xff4400, metalness: 0.9, roughness: 0.2, name: 'orange' } ),
+		    	new THREE.MeshStandardMaterial( { color: 0x001166, metalness: 0.9, roughness: 0.2, name: 'blue' } ),
+		    	new THREE.MeshStandardMaterial( { color: 0x990000, metalness: 0.9, roughness: 0.2, name: 'red' } ),
+		    	new THREE.MeshStandardMaterial( { color: 0x000000, metalness: 0.9, roughness: 0.5, name: 'black' } ),
+		    	new THREE.MeshStandardMaterial( { color: 0xffffff, metalness: 0.9, roughness: 0.5, name: 'white' } ),
+		        new THREE.MeshStandardMaterial( { color: 0x555555, metalness: 1.0, roughness: 0.2, name: 'metallic' } )
+			];
+
 			
 			object.traverse( function ( child ) {
 				if ( child.isMesh ) {
+					child.material.needsUpdate = true;
+					console.log(child.name);
 					if (child.name.includes('main')){
-						child.castShadow = true;
-						child.receiveShadow = true;
+						// child.material = materialsLib[0];
+						if(game.showColliders){
+							child.visible = false;
+						}
+						child.castShadow = false;
+						child.receiveShadow = false;
 					}else if (child.name.includes('mentproxy')){
-						child.material.visible = false;
+						// child.material = materialsLib[1];
+						if(!game.showColliders){
+							child.material.visible = false;
+						}
 						game.environmentProxy = child;
 					}else if (child.name.includes('door-proxy')){
-						child.material.visible = false;
+						// child.material = materialsLib[2];
+						if(game.showColliders){
+							child.material.visible = false;
+						}
 						door.proxy.push(child);
 						checkDoor();
  					}else if (child.name.includes('door')){
+						// child.material = materialsLib[3];
+ 						if(game.showColliders){
+							child.material.visible = false;
+ 						}
 						door.doors.push(child);
 						door.estado = 'cerrada';
 						door.ancho = 240;
 						checkDoor()
 					}else if (child.name.includes('fan')){
+						// child.material = materialsLib[4];
+ 						if(game.showColliders){
+							child.material.visible = false;
+ 						}
 						game.fans.push(child);
 					}
 				}else{
 					if (child.name.includes('Door-null')){
+						// child.material = materialsLib[5];
+ 						if(game.showColliders){
+							child.visible = false;
+ 						}
 						door.trigger = child;
 						checkDoor();
 					}
@@ -395,7 +435,15 @@ class Game{
 				}
 			} );
 			
-			game.loadUSB(loader);
+			console.log('textura pared');
+			const textureLoader = new THREE.TextureLoader();
+			textureLoader.load(game.textureEnviroment, function(texture){
+				console.log('textura pared cargada');
+				game.environmentProxy.material.needsUpdate = true;
+				game.environmentProxy.material.map = texture;
+				game.loadUSB(loader);
+			});
+
 		}, null, this.onError );
 	}
 	
