@@ -395,7 +395,7 @@ class Game{
 						game.environmentProxy = child;
 					}else if (child.name.includes('door-proxy')){
 						// child.material = materialsLib[2];
-						if(game.showColliders){
+						if(!game.showColliders){
 							child.material.visible = false;
 						}
 						door.proxy.push(child);
